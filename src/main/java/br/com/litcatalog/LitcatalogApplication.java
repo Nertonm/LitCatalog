@@ -12,7 +12,8 @@ public class LitcatalogApplication {
 		SpringApplication.run(LitcatalogApplication.class, args);
 		ConsumoApi consumoApi = new ConsumoApi();
 		System.out.println("Consumindo API...");
-		System.out.println(consumoApi.getDados("https://gutendex.com/books/"));
+		BookService bookService = new BookService();
+		System.out.println(bookService.SearchBookbyTitle("Esaú e Jacó"));
 	}
 
 }
