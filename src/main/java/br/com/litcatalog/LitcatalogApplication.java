@@ -5,16 +5,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import br.com.litcatalog.models.Book;
 import br.com.litcatalog.service.*;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class LitcatalogApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LitcatalogApplication.class, args);
-		ConsumoApi consumoApi = new ConsumoApi();
-		Book book = new Book();
-		System.out.println("Consumindo API...");
-		BookService bookService = new BookService();
+		ApplicationContext context = SpringApplication.run(LitcatalogApplication.class, args);
+		BookService bookService = context.getBean(BookService.class);
+
 		try {
 			String bookJson = bookService.getBookAsJson("Esaú e Jacó");
 			System.out.println(bookJson);
@@ -22,5 +21,4 @@ public class LitcatalogApplication {
 			e.printStackTrace();
 		}
 	}
-
 }
