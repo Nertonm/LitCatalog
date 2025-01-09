@@ -5,14 +5,14 @@ import br.com.litcatalog.models.Language;
 public class BookDTO {
     private String title;
     private String author;
-    private Language languages;
+    private String languages;
     private String downloads;
 
     public String getDownloads() {
         return downloads;
     }
 
-    public Language getLanguages() {
+    public String getLanguages() {
         return languages;
     }
 
@@ -36,7 +36,7 @@ public class BookDTO {
         this.downloads = downloads;
     }
 
-    public void setLanguages(Language languages) {
+    public void setLanguages(String languages) {
         this.languages = languages;
     }
 }
