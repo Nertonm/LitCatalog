@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import br.com.litcatalog.models.Language;
 import br.com.litcatalog.dto.BookDTO;
 import br.com.litcatalog.models.Book;
 import br.com.litcatalog.repository.BookRepository;
@@ -47,7 +48,7 @@ public class BookService {
         BookDTO bookDTO = new BookDTO();
         bookDTO.setTitle(bookNode.path("title").asText());
         bookDTO.setAuthor(bookNode.path("author").asText());
-        bookDTO.setLanguages(bookNode.path("languages").asText());
+        bookDTO.setLanguages(Language.valueOf(bookNode.path("languages").asText().toUpperCase()));
         bookDTO.setDownloads(bookNode.path("downloads").asText());
         saveBook(bookDTO);
         return mapper.writeValueAsString(bookDTO);
@@ -55,5 +56,14 @@ public class BookService {
 
     public Book saveBook(Book book) {
         return bookRepository.save(book);
+    }
+
+    private Book convertToBook(BookDTO bookDTO) {
+        Book book = new Book();
+        book.setTitle(bookDTO.getTitle());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setLanguages(bookDTO.getLanguages());
+        book.setDownloads(bookDTO.getDownloads());
+        return book;
     }
 }
