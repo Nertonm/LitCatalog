@@ -9,6 +9,16 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String title;
+
+    private String author;
+
+    private String languages;
+
+    private String downloads;
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -33,11 +43,11 @@ public class Book {
         this.author = author;
     }
 
-    public Language getLanguages() {
+    public String getLanguages() {
         return languages;
     }
 
-    public void setLanguages(Language languages) {
+    public void setLanguages(String languages) {
         this.languages = languages;
     }
 
@@ -48,14 +58,4 @@ public class Book {
     public void setDownloads(String downloads) {
         this.downloads = downloads;
     }
-
-    @Column(unique = true)
-    private String title;
-
-    private String author;
-
-    @Enumerated(EnumType.STRING)
-    private Language languages;
-
-    private String downloads;
 }
