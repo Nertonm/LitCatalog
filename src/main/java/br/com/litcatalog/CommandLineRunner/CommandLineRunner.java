@@ -28,12 +28,10 @@ public class CommandLineRunner {
                 case 1:
                     System.out.print("Enter book title: ");
                     String title = scanner.nextLine();
-                    bookFacade.getBookByTitle(title);
-                    System.out.println(bookByTitle);
+                    System.out.println(bookFacade.getBookByTitle(title));
                     break;
                 case 2:
-                    bookFacade.getAllBooks();
-                    allBooks.
+                    bookFacade.getAllBooks().forEach(System.out::println);
                     break;
                 case 6:
                     System.out.println("Exiting...");
