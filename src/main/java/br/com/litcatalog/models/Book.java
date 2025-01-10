@@ -58,4 +58,14 @@ public class Book {
     public void setDownloads(String downloads) {
         this.downloads = downloads;
     }
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", languages='" + languages + '\'' +
+                ", downloads='" + downloads + '\'' +
+                '}';
+    }
 }
