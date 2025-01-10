@@ -1,4 +1,4 @@
-package br.com.litcatalog.exception;
+package br.com.litcatalog.exceptions;
 
 public class DuplicateBookException extends RuntimeException {
     public DuplicateBookException(String message) {
