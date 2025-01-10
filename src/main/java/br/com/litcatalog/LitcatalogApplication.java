@@ -7,6 +7,8 @@ import br.com.litcatalog.models.Book;
 import br.com.litcatalog.service.*;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
+
 @SpringBootApplication
 public class LitcatalogApplication {
 
@@ -14,11 +16,7 @@ public class LitcatalogApplication {
 		ApplicationContext context = SpringApplication.run(LitcatalogApplication.class, args);
 		BookService bookService = context.getBean(BookService.class);
 
-		try {
-			String bookJson = bookService.getBookAsJson("Esaú e Jacó");
-			System.out.println(bookJson);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		System.out.println(bookService.getBookByTitle("Great Expectations").toString());
+		System.out.println(bookService.getBookByTitle("Great Expectations").toString());
 	}
 }
