@@ -22,7 +22,11 @@ public class BookFacade {
     }
 
     public String getBookByTitle(String title) {
-        return bookService.getBookByTitle(title).toString();
+        try {
+            return bookService.getBookByTitle(title).toString();
+        }catch (NullPointerException e){
+            return "Book not found";
+        }
     }
 
     public Book saveBook(Book book) {

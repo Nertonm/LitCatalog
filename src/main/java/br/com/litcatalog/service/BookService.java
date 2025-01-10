@@ -23,20 +23,21 @@ public class BookService {
     private BookRepository bookRepository;
 
     public String SearchBookbyTitle(String title) {
-        ConsumoApi consumoApi = new ConsumoApi();
-
-        // Normalize the string by decomposing accented characters
-        String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
-
-        // Regular expression to remove diacritics
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-
-        // Remove diacritics from the normalized string
-        title = pattern.matcher(normalized).replaceAll("");
-        String encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20");
-        System.out.println(encodedTitle);
-        return consumoApi.getDados("https://gutendex.com/books/?search=" + encodedTitle);
-
+        if (bookRepository.existsByTitle(title)) {
+            return bookRepository.findByTitle(title).get().toString();
+        }
+        else{
+            ConsumoApi consumoApi = new ConsumoApi();
+            // Normalize the string by decomposing accented characters
+            String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
+            // Regular expression to remove diacritics
+            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+            // Remove diacritics from the normalized string
+            title = pattern.matcher(normalized).replaceAll("");
+            String encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20");
+            System.out.println(encodedTitle);
+            return consumoApi.getDados("https://gutendex.com/books/?search=" + encodedTitle);
+        }
     }
 
     public String getBookAsJson(String title) throws IOException {
@@ -82,16 +83,21 @@ public class BookService {
         return allowedLanguages.contains(language);
     }
 
-    public Book getBookById(Long id){
+    public Book getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
+
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     public Book getBookByTitle(String title) {
-        return bookRepository.findByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("Book with title " + title + " not found."));
+        try {
+            return bookRepository.findByTitle(title)
+                    .orElseThrow(() -> new IllegalArgumentException("Book with title " + title + " not found."));
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
-
 }
