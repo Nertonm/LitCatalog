@@ -1,5 +1,6 @@
 package br.com.litcatalog.facade;
 
+import br.com.litcatalog.exceptions.DuplicateBookException;
 import br.com.litcatalog.models.Book;
 import br.com.litcatalog.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,12 @@ public class BookFacade {
     }
 
     public Book saveBook(Book book) {
-        return bookService.saveBook(book);
+        try {
+            bookService.saveBook(book);
+        } catch (DuplicateBookException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public String getBookAsJson(String title) throws IOException {

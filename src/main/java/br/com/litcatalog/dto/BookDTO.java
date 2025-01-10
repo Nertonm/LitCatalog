@@ -1,7 +1,5 @@
 package br.com.litcatalog.dto;
 
-import br.com.litcatalog.models.Language;
-
 public class BookDTO {
     private String title;
     private String author;

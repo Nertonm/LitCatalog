@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.litcatalog.dto.BookDTO;
 import br.com.litcatalog.models.Book;
 import br.com.litcatalog.repository.BookRepository;
-import br.com.litcatalog.exception.DuplicateBookException;
+import br.com.litcatalog.exceptions.DuplicateBookException;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -51,8 +51,29 @@ public class BookService {
         bookDTO.setLanguages((bookNode.path("languages").get(0).asText()));
         bookDTO.setDownloads(bookNode.path("download_count").asText());
         Book book = convertToBook(bookDTO);
+        if (bookRepository.findByTitle(book.getTitle()).isPresent()) {
+            return mapper.writeValueAsString(bookDTO);
+        }
         saveBook(book);
         return mapper.writeValueAsString(bookDTO);
+    }
+
+    public Book getBookAsJson(String title, String title1) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResponse = SearchBookbyTitle(title);
+        JsonNode rootNode = mapper.readTree(jsonResponse);
+        JsonNode bookNode = rootNode.path("results").get(0);
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setTitle(bookNode.path("title").asText());
+        bookDTO.setAuthor(bookNode.path("authors").get(0).path("name").asText());
+        bookDTO.setLanguages((bookNode.path("languages").get(0).asText()));
+        bookDTO.setDownloads(bookNode.path("download_count").asText());
+        Book book = convertToBook(bookDTO);
+        if (bookRepository.findByTitle(book.getTitle()).isPresent()) {
+            return bookRepository.findByTitle(book.getTitle()).get();
+        }
+        saveBook(book);
+        return bookRepository.findByTitle(book.getTitle()).get();
     }
 
     public Book saveBook(Book book) {
@@ -93,8 +114,16 @@ public class BookService {
 
     public Book getBookByTitle(String title) {
         try {
-            return bookRepository.findByTitle(title)
-                    .orElseThrow(() -> new IllegalArgumentException("Book with title " + title + " not found."));
+            if (bookRepository.findByTitle(title).isPresent()) {
+                return  bookRepository.findByTitle(title).get();
+            } else{
+                System.out.println("Book not found in repository, searching externally...");
+                try {
+                    return getBookAsJson(title, title);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             return null;
