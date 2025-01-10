@@ -36,6 +36,7 @@ public class BookService {
         String encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20");
         System.out.println(encodedTitle);
         return consumoApi.getDados("https://gutendex.com/books/?search=" + encodedTitle);
+
     }
 
     public String getBookAsJson(String title) throws IOException {
@@ -77,8 +78,20 @@ public class BookService {
     }
 
     private boolean isValidLanguage(String language) {
-        // Define the allowed languages based on the database constraint
         List<String> allowedLanguages = Arrays.asList("en", "pt", "es", "fr", "de");
         return allowedLanguages.contains(language);
     }
+
+    public Book getBookById(Long id){
+        return bookRepository.findById(id).orElse(null);
+    }
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    public Book getBookByTitle(String title) {
+        return bookRepository.findByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("Book with title " + title + " not found."));
+    }
+
 }
