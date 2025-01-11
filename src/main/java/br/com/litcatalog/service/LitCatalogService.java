@@ -1,5 +1,8 @@
 package br.com.litcatalog.service;
 
+import br.com.litcatalog.dto.AuthorDTO;
+import br.com.litcatalog.models.Author;
+import br.com.litcatalog.repository.AuthorRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,11 @@ import java.util.List;
 import java.util.Arrays;
 
 @Service
-public class BookService {
+public class LitCatalogService {
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
 
     public String SearchBookbyTitle(String title) {
         if (bookRepository.existsByTitle(title)) {
@@ -46,15 +51,27 @@ public class BookService {
         JsonNode rootNode = mapper.readTree(jsonResponse);
         JsonNode bookNode = rootNode.path("results").get(0);
         BookDTO bookDTO = new BookDTO();
+        AuthorDTO authorDTO = new AuthorDTO();
         bookDTO.setTitle(bookNode.path("title").asText());
         bookDTO.setAuthor(bookNode.path("authors").get(0).path("name").asText());
+        authorDTO.setName(bookNode.path("authors").get(0).path("name").asText());
+        authorDTO.setBirth(Integer.parseInt(bookNode.path("authors").get(0).path("birth_year").asText()));
+        int death_year = 0;
+        try {
+            death_year = Integer.parseInt(bookNode.path("authors").get(0).path("death_year").asText());
+        } catch (NumberFormatException e) {
+            death_year = 0;
+        }
+        authorDTO.setDeath(death_year);
         bookDTO.setLanguages((bookNode.path("languages").get(0).asText()));
         bookDTO.setDownloads(bookNode.path("download_count").asText());
         Book book = convertToBook(bookDTO);
+        Author author = convertToAuthor(authorDTO);
         if (bookRepository.findByTitle(book.getTitle()).isPresent()) {
             return mapper.writeValueAsString(bookDTO);
         }
         saveBook(book);
+        saveAuthor(author);
         return mapper.writeValueAsString(bookDTO);
     }
 
@@ -62,17 +79,29 @@ public class BookService {
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = SearchBookbyTitle(title);
         JsonNode rootNode = mapper.readTree(jsonResponse);
+        AuthorDTO authorDTO = new AuthorDTO();
         JsonNode bookNode = rootNode.path("results").get(0);
         BookDTO bookDTO = new BookDTO();
         bookDTO.setTitle(bookNode.path("title").asText());
         bookDTO.setAuthor(bookNode.path("authors").get(0).path("name").asText());
         bookDTO.setLanguages((bookNode.path("languages").get(0).asText()));
         bookDTO.setDownloads(bookNode.path("download_count").asText());
+        authorDTO.setName(bookNode.path("authors").get(0).path("name").asText());
+        authorDTO.setBirth(Integer.parseInt(bookNode.path("authors").get(0).path("birth_year").asText()));
+        int death_year = 0;
+        try {
+            death_year = Integer.parseInt(bookNode.path("authors").get(0).path("death_year").asText());
+        } catch (NumberFormatException e) {
+            death_year = 0;
+        }
+        authorDTO.setDeath(death_year);
+        Author author = convertToAuthor(authorDTO);
         Book book = convertToBook(bookDTO);
         if (bookRepository.findByTitle(book.getTitle()).isPresent()) {
             return bookRepository.findByTitle(book.getTitle()).get();
         }
         saveBook(book);
+        saveAuthor(author);
         return bookRepository.findByTitle(book.getTitle()).get();
     }
 
@@ -81,6 +110,13 @@ public class BookService {
             throw new DuplicateBookException("Book with title " + book.getTitle() + " already exists.");
         }
         return bookRepository.save(book);
+    }
+
+    public Author saveAuthor(Author author) {
+        if (authorRepository.existsByName(author.getName())) {
+            throw new DuplicateBookException("Author " + author.getName() + " already exists.");
+        }
+        return authorRepository.save(author);
     }
 
     private Book convertToBook(BookDTO bookDTO) {
@@ -98,6 +134,14 @@ public class BookService {
         book.setDownloads(bookDTO.getDownloads());
         return book;
     }
+    
+    private Author convertToAuthor(AuthorDTO authorDTO) {
+        Author author = new Author();
+        author.setName(authorDTO.getName());
+        author.setBirth(authorDTO.getBirth());
+        author.setDeath(authorDTO.getDeath());
+        return author;
+    }
 
     private boolean isValidLanguage(String language) {
         List<String> allowedLanguages = Arrays.asList("en", "pt", "es", "fr", "de");
@@ -110,6 +154,17 @@ public class BookService {
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
+    }
+
+    public List<Author> getAllAuthors() {
+        return authorRepository.findAll();
+    }
+
+    public List<Author> getAllLiveAuthorsInYear(int year) {
+        List <Author> authors = getAllAuthors();
+        authors.removeIf(author -> author.getDeath() < year);
+        authors.removeIf(author -> author.getBirth() > year);
+        return authors;
     }
 
     public Book getBookByTitle(String title) {
