@@ -31,6 +31,10 @@ public class LitCatalogFacade {
         }
     }
 
+    public long countBooksByLanguage(String language) {
+        return litCatalogService.countBooksByLanguage(language);
+    }
+
     public Book saveBook(Book book) {
         try {
             litCatalogService.saveBook(book);

@@ -45,6 +45,10 @@ public class LitCatalogService {
         }
     }
 
+    public long countBooksByLanguage(String language) {
+        return bookRepository.countByLanguages(language);
+    }
+
     public String getBookAsJson(String title) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = SearchBookbyTitle(title);
@@ -109,12 +113,22 @@ public class LitCatalogService {
         if (bookRepository.existsByTitle(book.getTitle())) {
             throw new DuplicateBookException("Book with title " + book.getTitle() + " already exists.");
         }
+        Author author = book.getAuthor();
+        if (authorRepository.existsByName(author.getName())) {
+            author = authorRepository.findByName(author.getName()).orElse(author);
+        } else {
+            author = authorRepository.save(author);
+        }
+        book.setAuthor(author);
         return bookRepository.save(book);
     }
 
     public Author saveAuthor(Author author) {
         if (authorRepository.existsByName(author.getName())) {
-            throw new DuplicateBookException("Author " + author.getName() + " already exists.");
+            Author existingAuthor = authorRepository.findByName(author.getName()).orElse(author);
+            existingAuthor.setBirth(author.getBirth());
+            existingAuthor.setDeath(author.getDeath());
+            return authorRepository.findByName(author.getName()).orElse(author);
         }
         return authorRepository.save(author);
     }
@@ -122,16 +136,13 @@ public class LitCatalogService {
     private Book convertToBook(BookDTO bookDTO) {
         Book book = new Book();
         book.setTitle(bookDTO.getTitle());
+        book.setLanguages(bookDTO.getLanguages());
         book.setAuthor(bookDTO.getAuthor());
-
-        // Validate the languages field
-        String language = bookDTO.getLanguages();
-        if (!isValidLanguage(language)) {
-            throw new IllegalArgumentException("Invalid language: " + language);
-        }
-        book.setLanguages(language);
-
         book.setDownloads(bookDTO.getDownloads());
+        Author author = new Author();
+        author.setName(bookDTO.getAuthor());
+
+        book.setAuthor(author);
         return book;
     }
     

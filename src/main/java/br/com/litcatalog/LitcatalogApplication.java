@@ -31,6 +31,7 @@ public class LitcatalogApplication implements CommandLineRunner {
 			System.out.println("2. Get all books");
 			System.out.println("3. List all authors");
 			System.out.println("4. List all authors alive in year:");
+			System.out.println("5. Count books by language");
 			System.out.println("6. Exit");
 			System.out.print("Enter your choice: ");
 			try {
@@ -51,6 +52,12 @@ public class LitcatalogApplication implements CommandLineRunner {
 						break;
 					case 4:
 						litCatalogFacade.getAllAliveAuthorsInYear(scanner.nextInt()).forEach(System.out::println);
+						break;
+					case 5:
+						System.out.print("Enter language: ");
+						String language = scanner.nextLine();
+						long count = litCatalogFacade.countBooksByLanguage(language);
+						System.out.println("Number of books in " + language + ": " + count);
 						break;
 					case 6:
 						System.out.println("Exiting...");
