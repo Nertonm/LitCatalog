@@ -22,7 +22,6 @@ O sistema consome dados de uma **API externa** para buscar informações sobre l
 - 📋 **Listagem de Livros e Autores**: Possibilita listar todos os livros e autores registrados no sistema.  
 - 🌍 **Filtragem por Idioma**: Permite listar livros registrados por idioma específico.  
 - 🎭 **Autores Vivos em Ano Específico**: Possibilita listar autores que estavam vivos em um determinado ano.  
-- 📈 **Top 10 Livros Mais Baixados**: Exibe os 10 livros mais baixados, conforme informações da API externa.  
 
 ---
 
