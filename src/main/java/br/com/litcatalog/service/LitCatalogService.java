@@ -104,8 +104,8 @@ public class LitCatalogService {
         if (bookRepository.findByTitle(book.getTitle()).isPresent()) {
             return bookRepository.findByTitle(book.getTitle()).get();
         }
-        saveBook(book);
         saveAuthor(author);
+        saveBook(book);
         return bookRepository.findByTitle(book.getTitle()).get();
     }
 
