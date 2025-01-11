@@ -1,18 +1,16 @@
 package br.com.litcatalog.CommandLineRunner;
 
-import br.com.litcatalog.facade.BookFacade;
+import br.com.litcatalog.facade.LitCatalogFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
 
 @Component
 public class CommandLineRunner {
 
     @Autowired
-    private BookFacade bookFacade;
+    private LitCatalogFacade litCatalogFacade;
 
     public void start() {
         Scanner scanner = new Scanner(System.in);
@@ -28,10 +26,10 @@ public class CommandLineRunner {
                 case 1:
                     System.out.print("Enter book title: ");
                     String title = scanner.nextLine();
-                    System.out.println(bookFacade.getBookByTitle(title));
+                    System.out.println(litCatalogFacade.getBookByTitle(title));
                     break;
                 case 2:
-                    bookFacade.getAllBooks().forEach(System.out::println);
+                    litCatalogFacade.getAllBooks().forEach(System.out::println);
                     break;
                 case 6:
                     System.out.println("Exiting...");
