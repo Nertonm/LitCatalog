@@ -12,8 +12,10 @@ public class Book {
     @Column(unique = true)
     private String title;
 
-    private String author;
-
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+    private String authorName;
     private String languages;
 
     private String downloads;
@@ -28,11 +30,15 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public void setAuthor(String author) {
+        this.authorName = author;
+    }
+
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
@@ -56,7 +62,7 @@ public class Book {
         return "Book{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
+                ", author='" + authorName + '\'' +
                 ", languages='" + languages + '\'' +
                 ", downloads='" + downloads + '\'' +
                 '}';
